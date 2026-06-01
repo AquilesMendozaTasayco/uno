@@ -1,18 +1,14 @@
-import Image from "next/image";
-
 export default function Home() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#D0021B]">
       <div className="w-[1060px] min-h-[480px] flex items-center justify-between px-[60px] py-10 gap-10">
 
         {/* LEFT: Image */}
-        <div className="flex-[0_0_480px] h-[360px] rounded-xl overflow-hidden relative">
-          <Image
+        <div className="flex-[0_0_480px] h-[360px] rounded-xl overflow-hidden">
+          <img
             src="/recurso.png"
             alt="Recurso"
-            fill
-            className="object-cover"
-            priority
+            className="w-full h-full object-cover"
           />
         </div>
 
@@ -21,13 +17,10 @@ export default function Home() {
 
           {/* LOGO */}
           <div className="w-full max-w-[400px]">
-            <Image
+            <img
               src="/logo_uno.png"
               alt="UNO Publicidad"
-              width={1183}
-              height={549}
               className="w-full h-auto"
-              priority
             />
           </div>
 
