@@ -57,9 +57,14 @@ export default function Home() {
           </div>
 
           {/* CTA */}
-          <button className="mt-1 bg-transparent border-2 border-white text-white font-bold text-sm md:text-[15px] tracking-[.05em] px-8 md:px-9 py-3 md:py-3.5 rounded-full cursor-pointer whitespace-nowrap hover:bg-white hover:text-[#D0021B] transition-colors duration-200">
+          <a
+            href="/uno-brochure.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-1 bg-transparent border-2 border-white text-white font-bold text-sm md:text-[15px] tracking-[.05em] px-8 md:px-9 py-3 md:py-3.5 rounded-full cursor-pointer whitespace-nowrap hover:bg-white hover:text-[#D0021B] transition-colors duration-200 inline-block text-center"
+          >
             Descargar Brochure
-          </button>
+          </a>
 
         </div>
       </div>
