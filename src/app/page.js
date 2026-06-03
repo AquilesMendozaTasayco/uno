@@ -4,11 +4,11 @@ export default function Home() {
       <div className="w-full md:w-[1060px] flex flex-col md:flex-row items-center md:items-center justify-between px-6 md:px-[60px] py-8 md:py-10 gap-6 md:gap-10">
 
         {/* LEFT: Image */}
-        <div className="w-full md:flex-[0_0_480px] h-[250px] md:h-[360px] rounded-xl overflow-hidden">
+        <div className="w-full md:flex-[0_0_480px] rounded-xl overflow-hidden">
           <img
             src="/recurso.png"
             alt="Recurso"
-            className="w-full h-full object-cover"
+            className="w-full object-cover md:w-full md:h-[360px]"
           />
         </div>
 
@@ -57,9 +57,13 @@ export default function Home() {
           </div>
 
           {/* CTA */}
-          <button className="mt-1 bg-transparent border-2 border-white text-white font-bold text-sm md:text-[15px] tracking-[.05em] px-8 md:px-9 py-3 md:py-3.5 rounded-full cursor-pointer whitespace-nowrap hover:bg-white hover:text-[#D0021B] transition-colors duration-200">
+          <a
+            href="/Uno-brochure.pdf"
+            download
+            className="mt-1 bg-transparent border-2 border-white text-white font-bold text-sm md:text-[15px] tracking-[.05em] px-8 md:px-9 py-3 md:py-3.5 rounded-full cursor-pointer whitespace-nowrap hover:bg-white hover:text-[#D0021B] transition-colors duration-200 inline-block text-center"
+          >
             Descargar Brochure
-          </button>
+          </a>
 
         </div>
       </div>
