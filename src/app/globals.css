@@ -1,9 +1,24 @@
 @import "tailwindcss";
 
 @theme inline {
+  --font-bebas: var(--font-bebas);
   --font-montserrat: var(--font-montserrat);
-  --color-uno-red: #D0021B;
+  --color-uno-red: #E8001C;
+  --color-uno-red-dark: #C40016;
+  --color-uno-black: #1A1A1A;
+  --color-uno-gray: #6B6B6B;
+  --color-uno-light: #F5F5F5;
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
+}
+
+::selection {
+  background-color: #E8001C;
+  color: white;
 }
