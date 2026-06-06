@@ -1,39 +1,69 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowDown, Megaphone } from "lucide-react";
+import { ArrowDown, ChevronLeft, ChevronRight } from "lucide-react";
+
+const slides = [
+  { src: "/banner1.jpg" },
+  { src: "/banner2.jpg" },
+  { src: "/banner3.jpg" },
+];
 
 export default function Hero() {
+  const [current, setCurrent] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    if (paused) return;
+    const interval = setInterval(() => {
+      setCurrent((c) => (c + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [paused]);
+
+  const prev = () => setCurrent((c) => (c - 1 + slides.length) % slides.length);
+  const next = () => setCurrent((c) => (c + 1) % slides.length);
+
   return (
     <section
       id="inicio"
-      className="relative min-h-screen bg-uno-red overflow-hidden flex items-center"
+      className="relative min-h-screen overflow-hidden flex items-center"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-uno-red via-uno-red to-uno-red-dark" />
+      {slides.map((slide, i) => (
+        <div
+          key={slide.src}
+          className="absolute inset-0 transition-opacity duration-700"
+          style={{ opacity: i === current ? 1 : 0 }}
+        >
+          <img
+            src={slide.src}
+            alt={`Slide ${i + 1}`}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/10 to-transparent" />
+        </div>
+      ))}
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8 py-20 md:py-0">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-10 md:gap-16">
-          {/* LEFT — Billboard */}
+        <div className="flex items-start justify-start">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full md:flex-[0_0_55%]"
+            className="w-full max-w-lg"
           >
-            <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden border-4 border-white/20">
-              <div className="bg-gradient-to-br from-gray-100 to-white p-6 md:p-10">
-                <div className="flex items-start gap-4 mb-4">
-                  <div className="bg-uno-red rounded-full p-2 md:p-3 shrink-0">
-                    <Megaphone size={28} className="text-white md:w-9 md:h-9" />
-                  </div>
-                  <div>
-                    <h1 className="font-[family-name:var(--font-bebas)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-uno-red leading-none tracking-wide">
-                      ¡QUE TODOS
-                    </h1>
-                    <h1 className="font-[family-name:var(--font-bebas)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-uno-black leading-none tracking-wide">
-                      TE VEAN!
-                    </h1>
-                  </div>
+            <div className="relative bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden border-4 border-white/30">
+              <div className="p-6 md:p-10">
+                <div className="mb-4">
+                  <h1 className="font-[family-name:var(--font-bebas)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-uno-red leading-none tracking-wide">
+                    ¡QUE TODOS
+                  </h1>
+                  <h1 className="font-[family-name:var(--font-bebas)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-uno-black leading-none tracking-wide">
+                    TE VEAN!
+                  </h1>
                 </div>
 
                 <div className="flex flex-wrap gap-2 mt-4 md:mt-6">
@@ -53,71 +83,84 @@ export default function Hero() {
                     </span>
                   ))}
                 </div>
+
+                <div className="flex flex-wrap gap-3 mt-6">
+                  <a
+                    href="#quienes-somos"
+                    className="bg-uno-red text-white font-bold text-xs tracking-[0.1em] px-6 py-2.5 rounded-full hover:bg-uno-red-dark transition-all uppercase"
+                  >
+                    Conócenos
+                  </a>
+                  <a
+                    href="https://wa.me/51929786645"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="border-2 border-uno-red text-uno-red font-bold text-xs tracking-[0.1em] px-6 py-2.5 rounded-full hover:bg-uno-red hover:text-white transition-all uppercase"
+                  >
+                    Cotiza Ahora
+                  </a>
+                </div>
               </div>
 
               <div className="bg-uno-red py-3 px-6 md:px-10 flex items-center justify-between">
                 <span className="text-white/80 text-xs font-bold tracking-widest">
                   PUBLICIDAD EXTERIOR
                 </span>
+                <div className="flex gap-1.5">
+                  {slides.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrent(i)}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        i === current ? "bg-white scale-125" : "bg-white/40 hover:bg-white/70"
+                      }`}
+                    />
+                  ))}
+                </div>
                 <span className="text-white/60 text-[10px] font-bold tracking-[0.2em]">
                   #somosuno
                 </span>
               </div>
             </div>
           </motion.div>
-
-          {/* RIGHT — Logo + CTA */}
-          <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-            className="w-full md:flex-1 flex flex-col items-center md:items-start gap-6"
-          >
-            <div className="text-center md:text-left">
-              <div className="font-[family-name:var(--font-bebas)] text-7xl sm:text-8xl md:text-9xl text-white leading-none tracking-wide">
-                UNO
-              </div>
-              <div className="font-[family-name:var(--font-montserrat)] text-white font-light text-lg md:text-xl tracking-[0.3em] uppercase mt-1">
-                PUBLICIDAD
-              </div>
-            </div>
-
-            <p className="text-white/80 text-sm md:text-base max-w-xs text-center md:text-left leading-relaxed">
-              Especialistas en soluciones gráficas con más de 10 años de experiencia.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-3 w-full">
-              <a
-                href="#quienes-somos"
-                className="bg-white text-uno-red font-bold text-sm tracking-[0.1em] px-8 py-3 rounded-full hover:bg-white/90 transition-all text-center uppercase"
-              >
-                Conócenos
-              </a>
-              <a
-                href="https://wa.me/51929786645"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="border-2 border-white text-white font-bold text-sm tracking-[0.1em] px-8 py-3 rounded-full hover:bg-white hover:text-uno-red transition-all text-center uppercase"
-              >
-                Cotiza Ahora
-              </a>
-            </div>
-          </motion.div>
         </div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Arrows */}
+      <button
+        onClick={prev}
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white flex items-center justify-center hover:bg-white/40 transition-all"
+      >
+        <ChevronLeft size={20} />
+      </button>
+      <button
+        onClick={next}
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white flex items-center justify-center hover:bg-white/40 transition-all"
+      >
+        <ChevronRight size={20} />
+      </button>
+
+      {/* Progress bar */}
+      <div className="absolute bottom-0 left-0 z-20 h-1 w-full bg-white/10">
+        <motion.div
+          key={current}
+          className="h-full bg-white/60"
+          initial={{ width: "0%" }}
+          animate={{ width: "100%" }}
+          transition={{ duration: 5, ease: "linear" }}
+        />
+      </div>
+
       <motion.a
         href="#quienes-somos"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: [0, 8, 0] }}
         transition={{ duration: 2, repeat: Infinity, delay: 1 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-white/60"
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 text-white/60"
       >
         <ArrowDown size={24} />
       </motion.a>
 
-      {/* URL watermarks */}
       <div className="absolute top-6 right-6 z-10 text-white/30 text-xs font-bold tracking-widest hidden md:block">
         www.unopubli.com
       </div>

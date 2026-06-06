@@ -61,12 +61,11 @@ export default function BannersViniles() {
 
             <div className="grid grid-cols-2 gap-3">
               {[
-                { src: "/banner1.png", span: true },
-                { src: "/banner2.png", span: false },
-                { src: null, span: false },
-                { src: null, span: false },
-                { src: null, span: false },
-                { src: null, span: false },
+                { src: "/banner1.jpg", span: true },
+                { src: "/banner2.jpg", span: false },
+                { src: "/banner3.jpg", span: false },
+                { src: "/banner4.jpg", span: false },
+                { src: "/banner5.jpg", span: false },
               ].map((item, i) => (
                 <motion.div
                   key={i}

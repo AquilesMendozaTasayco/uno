@@ -30,7 +30,7 @@ export default function PorQueElegirnos() {
   return (
     <section className="relative py-16 md:py-24 overflow-hidden">
       <div className="absolute inset-0">
-        <img src="/banner1.png" alt="" className="w-full h-full object-cover" />
+        <img src="/banner1.jpg" alt="" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-uno-red/95 via-uno-red/90 to-uno-red-dark/85" />
       </div>
 

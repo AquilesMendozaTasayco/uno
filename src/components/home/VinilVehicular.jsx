@@ -54,13 +54,11 @@ export default function VinilVehicular() {
 
             <div className="grid grid-cols-2 gap-3">
               {[
-                { src: "/banner1.png", span: true },
-                { src: null, span: false },
-                { src: null, span: false },
-                { src: null, span: false },
-                { src: null, span: false },
-                { src: null, span: false },
-                { src: null, span: false },
+                { src: "/vinil1.jpg", span: true },
+                { src: "/vinil2.jpg", span: false },
+                { src: "/vinil3.jpg", span: false },
+                { src: "/vinil4.jpg", span: false },
+                { src: "/vinil5.jpg", span: false },
               ].map((item, i) => (
                 <motion.div
                   key={i}
