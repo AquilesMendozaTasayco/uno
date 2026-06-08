@@ -1,7 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 const items = [
   "Ventanas con vista exterior e interior",
@@ -10,6 +13,32 @@ const items = [
 ];
 
 export default function VinilVehicular() {
+  const [images, setImages] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const q = query(collection(db, "unopubli", "content", "galeria"), where("section", "==", "vinil-vehicular"));
+        const snap = await getDocs(q);
+        const data = snap.docs.map(d => d.data()).filter(d => d.active !== false).sort((a, b) => a.order - b.order);
+        if (data.length) setImages(data);
+      } catch {}
+      setLoading(false);
+    };
+    fetchImages();
+  }, []);
+
+  const defaultImages = [
+    { imageUrl: "/vinil1.jpg" },
+    { imageUrl: "/vinil2.jpg" },
+    { imageUrl: "/vinil3.jpg" },
+    { imageUrl: "/vinil4.jpg" },
+    { imageUrl: "/vinil5.jpg" },
+  ];
+
+  const display = images || defaultImages;
+
   return (
     <section className="py-16 md:py-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
@@ -53,34 +82,35 @@ export default function VinilVehicular() {
             </motion.div>
 
             <div className="grid grid-cols-2 gap-3">
-              {[
-                { src: "/vinil1.jpg", span: true },
-                { src: "/vinil2.jpg", span: false },
-                { src: "/vinil3.jpg", span: false },
-                { src: "/vinil4.jpg", span: false },
-                { src: "/vinil5.jpg", span: false },
-              ].map((item, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.05 * i }}
-                  className={`bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 ${
-                    item.span ? "col-span-2 row-span-2" : ""
-                  }`}
-                >
-                  <div className={`bg-gray-200 flex items-center justify-center ${item.span ? "h-40 md:h-56" : "h-24 md:h-32"}`}>
-                    {item.src ? (
-                      <img src={item.src} alt={`Proyecto ${i + 1}`} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-gray-400 text-xs font-bold uppercase tracking-wider">
-                        Proyecto {i + 1}
-                      </span>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
+              {loading ? (
+                <>
+                  <div className="col-span-2 row-span-2 bg-gray-200 rounded-xl animate-pulse h-40 md:h-56" />
+                  {[1,2,3,4].map(i => <div key={i} className="bg-gray-200 rounded-xl animate-pulse h-24 md:h-32" />)}
+                </>
+              ) : (
+                display.map((item, i) => (
+                  <motion.div
+                    key={item.imageUrl || i}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.05 * i }}
+                    className={`bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 ${
+                      i === 0 ? "col-span-2 row-span-2" : ""
+                    }`}
+                  >
+                    <div className={`bg-gray-200 flex items-center justify-center ${i === 0 ? "h-40 md:h-56" : "h-24 md:h-32"}`}>
+                      {item.imageUrl ? (
+                        <img src={item.imageUrl} alt={item.title || `Proyecto ${i + 1}`} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-gray-400 text-xs font-bold uppercase tracking-wider">
+                          Proyecto {i + 1}
+                        </span>
+                      )}
+                    </div>
+                  </motion.div>
+                ))
+              )}
             </div>
           </div>
 

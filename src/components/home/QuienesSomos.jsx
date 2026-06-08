@@ -1,14 +1,33 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Shield, Users, Target } from "lucide-react";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export default function QuienesSomos() {
+  const [imageUrl, setImageUrl] = useState("/quienes-somos.png");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const q = query(collection(db, "unopubli", "content", "galeria"), where("section", "==", "quienes-somos"));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          setImageUrl(snap.docs[0].data().imageUrl);
+        }
+      } catch {}
+      setLoading(false);
+    };
+    fetchImage();
+  }, []);
+
   return (
     <section id="quienes-somos" className="py-16 md:py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center">
-          {/* LEFT — Text */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -66,7 +85,6 @@ export default function QuienesSomos() {
             </div>
           </motion.div>
 
-          {/* RIGHT — Image/Visual */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -75,11 +93,15 @@ export default function QuienesSomos() {
             className="relative"
           >
             <div className="relative bg-gray-100 rounded-2xl overflow-hidden shadow-xl max-w-sm mx-auto">
-              <img
-                src="/quienes-somos.png"
-                alt="UNO Publicidad - Quiénes Somos"
-                className="w-full h-auto"
-              />
+              {loading ? (
+                <div className="aspect-[3/4] bg-gray-200 animate-pulse rounded-2xl" />
+              ) : (
+                <img
+                  src={imageUrl}
+                  alt="UNO Publicidad - Quiénes Somos"
+                  className="w-full h-auto"
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
             </div>
 

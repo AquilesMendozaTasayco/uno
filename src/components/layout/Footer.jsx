@@ -1,7 +1,33 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { MapPin, Mail, Phone, Globe } from "lucide-react";
 import Link from "next/link";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
+const defaultConfig = {
+  phone: "929 786 645",
+  email: "jparedes@unopubli.com",
+  whatsapp: "51929786645",
+  address: "Av. España 1325 - Trujillo",
+};
 
 export default function Footer() {
+  const [config, setConfig] = useState(defaultConfig);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const snap = await getDoc(doc(db, "unopubli", "config"));
+        if (snap.exists()) setConfig({ ...defaultConfig, ...snap.data() });
+      } catch {}
+      setLoading(false);
+    };
+    fetchConfig();
+  }, []);
+
   return (
     <footer className="bg-uno-black text-white">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-16">
@@ -48,35 +74,46 @@ export default function Footer() {
               Contacto
             </h3>
             <div className="flex flex-col gap-3">
-              <a
-                href="https://wa.me/51929786645"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 text-gray-400 hover:text-white text-sm transition-colors"
-              >
-                <Phone size={16} className="text-uno-red shrink-0" />
-                929 786 645
-              </a>
-              <a
-                href="mailto:jparedes@unopubli.com"
-                className="flex items-center gap-3 text-gray-400 hover:text-white text-sm transition-colors"
-              >
-                <Mail size={16} className="text-uno-red shrink-0" />
-                jparedes@unopubli.com
-              </a>
-              <a
-                href="https://www.unopubli.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 text-gray-400 hover:text-white text-sm transition-colors"
-              >
-                <Globe size={16} className="text-uno-red shrink-0" />
-                www.unopubli.com
-              </a>
-              <span className="flex items-center gap-3 text-gray-400 text-sm">
-                <MapPin size={16} className="text-uno-red shrink-0" />
-                Av. España 1325 - Trujillo
-              </span>
+              {loading ? (
+                <>
+                  <div className="h-5 w-44 bg-white/5 rounded animate-pulse" />
+                  <div className="h-5 w-52 bg-white/5 rounded animate-pulse" />
+                  <div className="h-5 w-36 bg-white/5 rounded animate-pulse" />
+                  <div className="h-5 w-48 bg-white/5 rounded animate-pulse" />
+                </>
+              ) : (
+                <>
+                  <a
+                    href={`https://wa.me/${config.whatsapp}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 text-gray-400 hover:text-white text-sm transition-colors"
+                  >
+                    <Phone size={16} className="text-uno-red shrink-0" />
+                    {config.phone}
+                  </a>
+                  <a
+                    href={`mailto:${config.email}`}
+                    className="flex items-center gap-3 text-gray-400 hover:text-white text-sm transition-colors"
+                  >
+                    <Mail size={16} className="text-uno-red shrink-0" />
+                    {config.email}
+                  </a>
+                  <a
+                    href="https://www.unopubli.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 text-gray-400 hover:text-white text-sm transition-colors"
+                  >
+                    <Globe size={16} className="text-uno-red shrink-0" />
+                    www.unopubli.com
+                  </a>
+                  <span className="flex items-center gap-3 text-gray-400 text-sm">
+                    <MapPin size={16} className="text-uno-red shrink-0" />
+                    {config.address}
+                  </span>
+                </>
+              )}
             </div>
           </div>
         </div>

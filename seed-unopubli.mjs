@@ -16,40 +16,40 @@ const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
 const slides = [
-  { id: "slide-0", title: "¡QUE TODOS TE VEAN!", subtitle: "GIGANTOGRAFÍAS · LETREROS · LETRAS 3D · VINILES · ROLL SCREEN · BANNERS", imageUrl: "/banner1.jpg", order: 0 },
-  { id: "slide-1", title: "BANNERS PUBLICITARIOS", subtitle: "Impresión de alta calidad en gran formato", imageUrl: "/banner2.jpg", order: 1 },
-  { id: "slide-2", title: "LETRAS 3D", subtitle: "Corte digital de alta precisión", imageUrl: "/banner3.jpg", order: 2 },
+  { id: "slide-0", title: "¡QUE TODOS TE VEAN!", subtitle: "GIGANTOGRAFÍAS · LETREROS · LETRAS 3D · VINILES · ROLL SCREEN · BANNERS", imageUrl: "/banner1.jpg", order: 0, active: true },
+  { id: "slide-1", title: "BANNERS PUBLICITARIOS", subtitle: "Impresión de alta calidad en gran formato", imageUrl: "/banner2.jpg", order: 1, active: true },
+  { id: "slide-2", title: "LETRAS 3D", subtitle: "Corte digital de alta precisión", imageUrl: "/banner3.jpg", order: 2, active: true },
 ];
 
 const galeria = [
   // Banners / Viniles
-  { id: "gal-ban-1", section: "banners-viniles", imageUrl: "/banner1.jpg", order: 0, title: "Banners publicitarios" },
-  { id: "gal-ban-2", section: "banners-viniles", imageUrl: "/banner2.jpg", order: 1, title: "Vinil adhesivo" },
-  { id: "gal-ban-3", section: "banners-viniles", imageUrl: "/banner3.jpg", order: 2, title: "Letras 3D" },
-  { id: "gal-ban-4", section: "banners-viniles", imageUrl: "/banner4.jpg", order: 3, title: "Letreros luminosos" },
-  { id: "gal-ban-5", section: "banners-viniles", imageUrl: "/banner5.jpg", order: 4, title: "Paneles y vallas" },
+  { id: "gal-ban-1", section: "banners-viniles", imageUrl: "/banner1.jpg", order: 0, title: "Banners publicitarios", active: true },
+  { id: "gal-ban-2", section: "banners-viniles", imageUrl: "/banner2.jpg", order: 1, title: "Vinil adhesivo", active: true },
+  { id: "gal-ban-3", section: "banners-viniles", imageUrl: "/banner3.jpg", order: 2, title: "Letras 3D", active: true },
+  { id: "gal-ban-4", section: "banners-viniles", imageUrl: "/banner4.jpg", order: 3, title: "Letreros luminosos", active: true },
+  { id: "gal-ban-5", section: "banners-viniles", imageUrl: "/banner5.jpg", order: 4, title: "Paneles y vallas", active: true },
 
   // Letras 3D
-  { id: "gal-3d-1", section: "letras-3d", imageUrl: "/3d1.jpg", order: 0, title: "Letrero 3D" },
-  { id: "gal-3d-2", section: "letras-3d", imageUrl: "/3d2.jpg", order: 1, title: "Letrero luminoso" },
-  { id: "gal-3d-3", section: "letras-3d", imageUrl: "/3d3.jpg", order: 2, title: "Backing iluminado" },
-  { id: "gal-3d-4", section: "letras-3d", imageUrl: "/3d4.jpg", order: 3, title: "Letrero en altura" },
+  { id: "gal-3d-1", section: "letras-3d", imageUrl: "/3d1.jpg", order: 0, title: "Letrero 3D", active: true },
+  { id: "gal-3d-2", section: "letras-3d", imageUrl: "/3d2.jpg", order: 1, title: "Letrero luminoso", active: true },
+  { id: "gal-3d-3", section: "letras-3d", imageUrl: "/3d3.jpg", order: 2, title: "Backing iluminado", active: true },
+  { id: "gal-3d-4", section: "letras-3d", imageUrl: "/3d4.jpg", order: 3, title: "Letrero en altura", active: true },
 
   // Vinil Vehicular
-  { id: "gal-vin-1", section: "vinil-vehicular", imageUrl: "/vinil1.jpg", order: 0, title: "Flota vehicular" },
-  { id: "gal-vin-2", section: "vinil-vehicular", imageUrl: "/vinil2.jpg", order: 1, title: "Vinil ventanas" },
-  { id: "gal-vin-3", section: "vinil-vehicular", imageUrl: "/vinil3.jpg", order: 2, title: "Mamparas pavonadas" },
-  { id: "gal-vin-4", section: "vinil-vehicular", imageUrl: "/vinil4.jpg", order: 3, title: "Instalación profesional" },
-  { id: "gal-vin-5", section: "vinil-vehicular", imageUrl: "/vinil5.jpg", order: 4, title: "Acabados de alta exigencia" },
+  { id: "gal-vin-1", section: "vinil-vehicular", imageUrl: "/vinil1.jpg", order: 0, title: "Flota vehicular", active: true },
+  { id: "gal-vin-2", section: "vinil-vehicular", imageUrl: "/vinil2.jpg", order: 1, title: "Vinil ventanas", active: true },
+  { id: "gal-vin-3", section: "vinil-vehicular", imageUrl: "/vinil3.jpg", order: 2, title: "Mamparas pavonadas", active: true },
+  { id: "gal-vin-4", section: "vinil-vehicular", imageUrl: "/vinil4.jpg", order: 3, title: "Instalación profesional", active: true },
+  { id: "gal-vin-5", section: "vinil-vehicular", imageUrl: "/vinil5.jpg", order: 4, title: "Acabados de alta exigencia", active: true },
 
   // Display / Ruletas
-  { id: "gal-rul-1", section: "display-ruletas", imageUrl: "/ruletas1.jpg", order: 0, title: "Roll screen" },
-  { id: "gal-rul-2", section: "display-ruletas", imageUrl: "/ruletas2.jpg", order: 1, title: "Ruletas para activaciones" },
-  { id: "gal-rul-3", section: "display-ruletas", imageUrl: "/ruletas3.jpg", order: 2, title: "Módulos comerciales" },
-  { id: "gal-rul-4", section: "display-ruletas", imageUrl: "/ruletas4.jpg", order: 3, title: "Vallas publicitarias" },
+  { id: "gal-rul-1", section: "display-ruletas", imageUrl: "/ruletas1.jpg", order: 0, title: "Roll screen", active: true },
+  { id: "gal-rul-2", section: "display-ruletas", imageUrl: "/ruletas2.jpg", order: 1, title: "Ruletas para activaciones", active: true },
+  { id: "gal-rul-3", section: "display-ruletas", imageUrl: "/ruletas3.jpg", order: 2, title: "Módulos comerciales", active: true },
+  { id: "gal-rul-4", section: "display-ruletas", imageUrl: "/ruletas4.jpg", order: 3, title: "Vallas publicitarias", active: true },
 
   // Quiénes Somos
-  { id: "gal-qs-1", section: "quienes-somos", imageUrl: "/quienes-somos.png", order: 0, title: "Quiénes Somos" },
+  { id: "gal-qs-1", section: "quienes-somos", imageUrl: "/quienes-somos.png", order: 0, title: "Quiénes Somos", active: true },
 ];
 
 const configData = {

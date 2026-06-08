@@ -3,27 +3,60 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowDown, ChevronLeft, ChevronRight } from "lucide-react";
-
-const slides = [
-  { src: "/banner1.jpg" },
-  { src: "/banner2.jpg" },
-  { src: "/banner3.jpg" },
-];
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export default function Hero() {
+  const [slides, setSlides] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
 
   useEffect(() => {
-    if (paused) return;
+    const fetchSlides = async () => {
+      try {
+        const snap = await getDocs(collection(db, "unopubli", "content", "slides"));
+        const data = snap.docs.map(d => d.data()).filter(d => d.active !== false).sort((a, b) => a.order - b.order);
+        if (data.length) setSlides(data);
+      } catch {}
+      setLoading(false);
+    };
+    fetchSlides();
+  }, []);
+
+  useEffect(() => {
+    if (paused || !slides.length) return;
     const interval = setInterval(() => {
       setCurrent((c) => (c + 1) % slides.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [paused]);
+  }, [paused, slides.length]);
 
   const prev = () => setCurrent((c) => (c - 1 + slides.length) % slides.length);
   const next = () => setCurrent((c) => (c + 1) % slides.length);
+
+  if (loading) {
+    return (
+      <section className="relative min-h-screen bg-gray-100 flex items-center">
+        <div className="w-full max-w-7xl mx-auto px-4 md:px-8">
+          <div className="w-full max-w-lg">
+            <div className="bg-white/80 backdrop-blur-md rounded-2xl overflow-hidden border-4 border-white/30">
+              <div className="p-6 md:p-10 space-y-4">
+                <div className="h-12 md:h-16 bg-gray-200 rounded-lg animate-pulse" />
+                <div className="h-12 md:h-16 bg-gray-200 rounded-lg animate-pulse w-3/4" />
+                <div className="flex gap-2 mt-4">
+                  {[1,2,3,4].map(i => <div key={i} className="h-6 w-24 bg-gray-200 rounded-full animate-pulse" />)}
+                </div>
+              </div>
+              <div className="bg-gray-200 py-3 px-6 md:px-10 h-10 animate-pulse" />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!slides.length) return null;
 
   return (
     <section
@@ -34,12 +67,12 @@ export default function Hero() {
     >
       {slides.map((slide, i) => (
         <div
-          key={slide.src}
+          key={slide.imageUrl}
           className="absolute inset-0 transition-opacity duration-700"
           style={{ opacity: i === current ? 1 : 0 }}
         >
           <img
-            src={slide.src}
+            src={slide.imageUrl}
             alt={`Slide ${i + 1}`}
             className="w-full h-full object-cover"
           />
@@ -126,7 +159,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Arrows */}
       <button
         onClick={prev}
         className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white flex items-center justify-center hover:bg-white/40 transition-all"
@@ -140,7 +172,6 @@ export default function Hero() {
         <ChevronRight size={20} />
       </button>
 
-      {/* Progress bar */}
       <div className="absolute bottom-0 left-0 z-20 h-1 w-full bg-white/10">
         <motion.div
           key={current}

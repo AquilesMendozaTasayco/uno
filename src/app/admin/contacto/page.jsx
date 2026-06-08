@@ -17,6 +17,24 @@ const defaultData = {
   tiktok: "",
 };
 
+function Field({ icon: Icon, label, field, type = "text", placeholder, value, onChange }) {
+  return (
+    <div>
+      <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
+        <Icon size={14} />
+        {label}
+      </label>
+      <input
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-bold text-gray-800 outline-none focus:border-uno-red focus:bg-white transition-all"
+      />
+    </div>
+  );
+}
+
 export default function ContactoPage() {
   const [form, setForm] = useState({ ...defaultData });
   const [loading, setLoading] = useState(true);
@@ -24,18 +42,16 @@ export default function ContactoPage() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    loadData();
+    (async () => {
+      try {
+        const snap = await getDoc(doc(db, CONFIG_DOC));
+        if (snap.exists()) {
+          setForm({ ...defaultData, ...snap.data() });
+        }
+      } catch {}
+      setLoading(false);
+    })();
   }, []);
-
-  const loadData = async () => {
-    try {
-      const snap = await getDoc(doc(db, CONFIG_DOC));
-      if (snap.exists()) {
-        setForm({ ...defaultData, ...snap.data() });
-      }
-    } catch {}
-    setLoading(false);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,22 +65,6 @@ export default function ContactoPage() {
     }
     setSaving(false);
   };
-
-  const Field = ({ icon: Icon, label, field, type = "text", placeholder }) => (
-    <div>
-      <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
-        <Icon size={14} />
-        {label}
-      </label>
-      <input
-        type={type}
-        placeholder={placeholder}
-        value={form[field]}
-        onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-bold text-gray-800 outline-none focus:border-uno-red focus:bg-white transition-all"
-      />
-    </div>
-  );
 
   if (loading) {
     return (
@@ -90,19 +90,19 @@ export default function ContactoPage() {
           <h2 className="font-[family-name:var(--font-bebas)] text-xl text-gray-800 tracking-wide">
             Información de Contacto
           </h2>
-          <Field icon={Phone} label="Teléfono" field="phone" placeholder="929 786 645" />
-          <Field icon={MessageCircle} label="WhatsApp (con código de país)" field="whatsapp" placeholder="51929786645" />
-          <Field icon={Mail} label="Correo Electrónico" field="email" type="email" placeholder="jparedes@unopubli.com" />
-          <Field icon={MapPin} label="Dirección" field="address" placeholder="Av. España 1325 - Trujillo" />
+          <Field icon={Phone} label="Teléfono" field="phone" placeholder="929 786 645" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+          <Field icon={MessageCircle} label="WhatsApp (con código de país)" field="whatsapp" placeholder="51929786645" value={form.whatsapp} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })} />
+          <Field icon={Mail} label="Correo Electrónico" field="email" type="email" placeholder="jparedes@unopubli.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+          <Field icon={MapPin} label="Dirección" field="address" placeholder="Av. España 1325 - Trujillo" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
         </div>
 
         <div className="bg-white border border-gray-100 rounded-2xl p-6 space-y-5">
           <h2 className="font-[family-name:var(--font-bebas)] text-xl text-gray-800 tracking-wide">
             Redes Sociales
           </h2>
-          <Field icon={ExternalLink} label="Facebook (URL completa)" field="facebook" placeholder="https://facebook.com/unopubli" />
-          <Field icon={Camera} label="Instagram (URL completa)" field="instagram" placeholder="https://instagram.com/unopubli" />
-          <Field icon={Globe} label="TikTok (URL completa)" field="tiktok" placeholder="https://tiktok.com/@unopubli" />
+          <Field icon={ExternalLink} label="Facebook (URL completa)" field="facebook" placeholder="https://facebook.com/unopubli" value={form.facebook} onChange={(e) => setForm({ ...form, facebook: e.target.value })} />
+          <Field icon={Camera} label="Instagram (URL completa)" field="instagram" placeholder="https://instagram.com/unopubli" value={form.instagram} onChange={(e) => setForm({ ...form, instagram: e.target.value })} />
+          <Field icon={Globe} label="TikTok (URL completa)" field="tiktok" placeholder="https://tiktok.com/@unopubli" value={form.tiktok} onChange={(e) => setForm({ ...form, tiktok: e.target.value })} />
         </div>
 
         <button

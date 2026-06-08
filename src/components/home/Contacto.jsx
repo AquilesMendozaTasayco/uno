@@ -1,14 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Mail, Phone, ArrowRight, Send, Loader2, Check } from "lucide-react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
+const defaultConfig = {
+  phone: "929 786 645",
+  email: "jparedes@unopubli.com",
+  address: "Av. España 1325 - Trujillo",
+  whatsapp: "51929786645",
+};
 
 export default function Contacto() {
+  const [config, setConfig] = useState(defaultConfig);
+  const [configLoading, setConfigLoading] = useState(true);
   const [form, setForm] = useState({ nombre: "", email: "", telefono: "", asunto: "", mensaje: "" });
-  const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const snap = await getDoc(doc(db, "unopubli", "config"));
+        if (snap.exists()) setConfig({ ...defaultConfig, ...snap.data() });
+      } catch {}
+      setConfigLoading(false);
+    };
+    fetchConfig();
+  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -17,7 +39,7 @@ export default function Contacto() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
+    setSending(true);
     try {
       const res = await fetch("/api/contacto", {
         method: "POST",
@@ -32,7 +54,7 @@ export default function Contacto() {
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      setSending(false);
     }
   };
 
@@ -47,7 +69,6 @@ export default function Contacto() {
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 md:px-8">
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-start">
-          {/* Left: Branding + Info */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -74,24 +95,33 @@ export default function Contacto() {
             </div>
 
             <div className="flex flex-col items-center md:items-start gap-3 mb-8">
-              <a href="https://wa.me/51929786645" target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-3 text-white hover:bg-white/20 transition-all text-sm w-fit">
-                <Phone size={16} />
-                <span className="font-bold">929 786 645</span>
-              </a>
-              <a href="mailto:jparedes@unopubli.com"
-                className="flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-3 text-white hover:bg-white/20 transition-all text-sm w-fit">
-                <Mail size={16} />
-                <span>jparedes@unopubli.com</span>
-              </a>
-              <span className="flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-3 text-white text-sm w-fit">
-                <MapPin size={16} />
-                <span>Av. España 1325 - Trujillo</span>
-              </span>
+              {configLoading ? (
+                <>
+                  <div className="h-10 w-48 bg-white/10 rounded-full animate-pulse" />
+                  <div className="h-10 w-56 bg-white/10 rounded-full animate-pulse" />
+                  <div className="h-10 w-44 bg-white/10 rounded-full animate-pulse" />
+                </>
+              ) : (
+                <>
+                  <a href={`https://wa.me/${config.whatsapp}`} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-3 text-white hover:bg-white/20 transition-all text-sm w-fit">
+                    <Phone size={16} />
+                    <span className="font-bold">{config.phone}</span>
+                  </a>
+                  <a href={`mailto:${config.email}`}
+                    className="flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-3 text-white hover:bg-white/20 transition-all text-sm w-fit">
+                    <Mail size={16} />
+                    <span>{config.email}</span>
+                  </a>
+                  <span className="flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-3 text-white text-sm w-fit">
+                    <MapPin size={16} />
+                    <span>{config.address}</span>
+                  </span>
+                </>
+              )}
             </div>
           </motion.div>
 
-          {/* Right: Form */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -124,18 +154,18 @@ export default function Contacto() {
               )}
 
               <div className="flex items-center gap-3">
-                <button type="submit" disabled={loading || sent}
+                <button type="submit" disabled={sending || sent}
                   className="flex items-center gap-2 bg-white text-uno-red font-bold text-sm tracking-[0.1em] px-8 py-3.5 rounded-full hover:bg-white/90 transition-all uppercase disabled:opacity-50">
-                  {loading ? (
+                  {sending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : sent ? (
                     <Check className="h-4 w-4" />
                   ) : (
                     <Send className="h-4 w-4" />
                   )}
-                  {loading ? "Enviando..." : sent ? "¡Enviado!" : "Enviar Mensaje"}
+                  {sending ? "Enviando..." : sent ? "¡Enviado!" : "Enviar Mensaje"}
                 </button>
-                <a href="https://wa.me/51929786645" target="_blank" rel="noopener noreferrer"
+                <a href={`https://wa.me/${config.whatsapp}`} target="_blank" rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-white/70 font-bold text-sm tracking-[0.1em] px-6 py-3.5 rounded-full hover:bg-white/10 transition-all uppercase">
                   Cotiza por WhatsApp
                   <ArrowRight size={14} />
