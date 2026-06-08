@@ -29,6 +29,7 @@ export default function GaleriaPage() {
   const [uploading, setUploading] = useState(false);
   const [editImage, setEditImage] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [replacingImage, setReplacingImage] = useState(false);
 
   const loadImages = async () => {
     setLoading(true);
@@ -111,15 +112,41 @@ export default function GaleriaPage() {
     await loadImages();
   };
 
+  const handleReplaceImage = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !editImage) return;
+    setReplacingImage(true);
+
+    const fileName = `${editImage.section}_${Date.now()}_${file.name}`;
+    const storageRef = ref(storage, `unopubli/galeria/${fileName}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on("state_changed", null, null, async () => {
+      const url = await getDownloadURL(uploadTask.snapshot.ref);
+      setEditImage({ ...editImage, imageUrl: url, _newImage: true });
+      setReplacingImage(false);
+    });
+  };
+
   const handleSaveEdit = async (e) => {
     e.preventDefault();
     if (!editImage) return;
     setSaving(true);
     try {
-      await setDoc(doc(db, GALERIA_COLLECTION, editImage.id), {
+      const data = {
         title: editImage.title,
         active: editImage.active,
-      }, { merge: true });
+      };
+      if (editImage._newImage && editImage.imageUrl) {
+        data.imageUrl = editImage.imageUrl;
+      }
+      await setDoc(doc(db, GALERIA_COLLECTION, editImage.id), data, { merge: true });
+      if (editImage._newImage && editImage._oldImageUrl) {
+        const oldPath = editImage._oldImageUrl?.split("/o/")[1]?.split("?")[0];
+        if (oldPath) {
+          try { await deleteObject(ref(storage, decodeURIComponent(oldPath))); } catch {}
+        }
+      }
       setEditImage(null);
       await loadImages();
     } catch (err) {
@@ -232,10 +259,10 @@ export default function GaleriaPage() {
                     {img.active ? <Eye size={13} /> : <EyeOff size={13} />}
                     {img.active ? "Activo" : "Inactivo"}
                   </button>
-                  <button
-                    onClick={() => setEditImage({ ...img })}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold text-gray-400 hover:bg-blue-50 hover:text-blue-500 transition-all"
-                  >
+                    <button
+                      onClick={() => setEditImage({ ...img, _oldImageUrl: img.imageUrl })}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold text-gray-400 hover:bg-blue-50 hover:text-blue-500 transition-all"
+                    >
                     <Edit3 size={13} />
                     Editar
                   </button>
@@ -282,8 +309,19 @@ export default function GaleriaPage() {
               </div>
 
               <form onSubmit={handleSaveEdit} className="space-y-5">
-                <div className="aspect-[16/9] rounded-xl overflow-hidden bg-gray-100 mb-1">
+                <div className="relative aspect-[16/9] rounded-xl overflow-hidden bg-gray-100 mb-1 group">
                   <img src={editImage.imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                  <label className={`absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity ${replacingImage ? "opacity-100" : ""}`}>
+                    <input type="file" accept="image/*" className="hidden" onChange={handleReplaceImage} disabled={replacingImage} />
+                    {replacingImage ? (
+                      <Loader2 className="h-6 w-6 animate-spin text-white" />
+                    ) : (
+                      <span className="flex items-center gap-2 text-white text-xs font-bold uppercase tracking-wider bg-black/50 px-4 py-2 rounded-full">
+                        <Upload size={14} />
+                        Cambiar imagen
+                      </span>
+                    )}
+                  </label>
                 </div>
 
                 <div>

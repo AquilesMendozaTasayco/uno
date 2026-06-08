@@ -18,6 +18,7 @@ export default function HeroSlidesPage() {
   const [uploading, setUploading] = useState(false);
   const [editSlide, setEditSlide] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [replacingImage, setReplacingImage] = useState(false);
 
   const loadSlides = async () => {
     setLoading(true);
@@ -96,15 +97,41 @@ export default function HeroSlidesPage() {
     await loadSlides();
   };
 
+  const handleReplaceImage = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !editSlide) return;
+    setReplacingImage(true);
+
+    const fileName = `hero_${Date.now()}_${file.name}`;
+    const storageRef = ref(storage, `unopubli/slides/${fileName}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on("state_changed", null, null, async () => {
+      const url = await getDownloadURL(uploadTask.snapshot.ref);
+      setEditSlide({ ...editSlide, imageUrl: url, _newImage: true });
+      setReplacingImage(false);
+    });
+  };
+
   const handleSaveEdit = async (e) => {
     e.preventDefault();
     if (!editSlide) return;
     setSaving(true);
     try {
-      await setDoc(doc(db, SLIDES_COLLECTION, editSlide.id), {
+      const data = {
         title: editSlide.title,
         subtitle: editSlide.subtitle,
-      }, { merge: true });
+      };
+      if (editSlide._newImage && editSlide.imageUrl) {
+        data.imageUrl = editSlide.imageUrl;
+      }
+      await setDoc(doc(db, SLIDES_COLLECTION, editSlide.id), data, { merge: true });
+      if (editSlide._newImage && editSlide._oldImageUrl) {
+        const oldPath = editSlide._oldImageUrl?.split("/o/")[1]?.split("?")[0];
+        if (oldPath) {
+          try { await deleteObject(ref(storage, decodeURIComponent(oldPath))); } catch {}
+        }
+      }
       setEditSlide(null);
       await loadSlides();
     } catch (err) {
@@ -204,7 +231,7 @@ export default function HeroSlidesPage() {
                 </button>
 
                 <button
-                  onClick={() => setEditSlide({ ...slide })}
+                  onClick={() => setEditSlide({ ...slide, _oldImageUrl: slide.imageUrl })}
                   className="p-2.5 rounded-xl text-gray-300 hover:bg-blue-50 hover:text-blue-500 transition-all"
                 >
                   <Edit3 size={16} />
@@ -251,8 +278,19 @@ export default function HeroSlidesPage() {
               </div>
 
               <form onSubmit={handleSaveEdit} className="space-y-5">
-                <div className="aspect-[16/6] rounded-xl overflow-hidden bg-gray-100 mb-1">
+                <div className="relative aspect-[16/6] rounded-xl overflow-hidden bg-gray-100 mb-1 group">
                   <img src={editSlide.imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                  <label className={`absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity ${replacingImage ? "opacity-100" : ""}`}>
+                    <input type="file" accept="image/*" className="hidden" onChange={handleReplaceImage} disabled={replacingImage} />
+                    {replacingImage ? (
+                      <Loader2 className="h-6 w-6 animate-spin text-white" />
+                    ) : (
+                      <span className="flex items-center gap-2 text-white text-xs font-bold uppercase tracking-wider bg-black/50 px-4 py-2 rounded-full">
+                        <Upload size={14} />
+                        Cambiar imagen
+                      </span>
+                    )}
+                  </label>
                 </div>
 
                 <div>
