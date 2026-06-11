@@ -22,3 +22,7 @@ body {
   background-color: #E8001C;
   color: white;
 }
+
+.filter-logo-red {
+  filter: brightness(0) saturate(100%) invert(8%) sepia(100%) saturate(7410%) hue-rotate(358deg) brightness(93%) contrast(126%);
+}

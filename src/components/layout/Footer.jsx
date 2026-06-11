@@ -34,9 +34,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
           <div>
             <div className="mb-4">
-              <span className="font-[family-name:var(--font-bebas)] text-3xl text-white tracking-wide">
-                UNO <span className="font-[family-name:var(--font-montserrat)] font-light text-sm">PUBLICIDAD</span>
-              </span>
+              <img src="/logo_uno.png" alt="UNO Publicidad" className="h-12 w-auto" />
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
               Especialistas en soluciones gráficas con más de 10 años de experiencia en Trujillo, Perú.

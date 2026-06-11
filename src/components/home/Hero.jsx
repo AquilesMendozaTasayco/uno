@@ -1,16 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ArrowDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import Lightbox from "@/components/Lightbox";
 
 export default function Hero() {
   const [slides, setSlides] = useState([]);
   const [loading, setLoading] = useState(true);
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [lightboxImg, setLightboxImg] = useState(null);
 
   useEffect(() => {
     const fetchSlides = async () => {
@@ -71,11 +73,13 @@ export default function Hero() {
           className="absolute inset-0 transition-opacity duration-700"
           style={{ opacity: i === current ? 1 : 0 }}
         >
-          <img
-            src={slide.imageUrl}
-            alt={`Slide ${i + 1}`}
-            className="w-full h-full object-cover"
-          />
+          <button onClick={() => setLightboxImg(slide.imageUrl)} className="w-full h-full">
+            <img
+              src={slide.imageUrl}
+              alt={`Slide ${i + 1}`}
+              className="w-full h-full object-cover cursor-pointer"
+            />
+          </button>
           <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/10 to-transparent" />
         </div>
       ))}
@@ -88,7 +92,7 @@ export default function Hero() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="w-full max-w-lg"
           >
-            <div className="relative bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden border-4 border-white/30">
+            <div className="relative bg-white/40 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden border-4 border-white/20">
               <div className="p-6 md:p-10">
                 <div className="mb-4">
                   <h1 className="font-[family-name:var(--font-bebas)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-uno-red leading-none tracking-wide">
@@ -97,24 +101,6 @@ export default function Hero() {
                   <h1 className="font-[family-name:var(--font-bebas)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-uno-black leading-none tracking-wide">
                     TE VEAN!
                   </h1>
-                </div>
-
-                <div className="flex flex-wrap gap-2 mt-4 md:mt-6">
-                  {[
-                    "GIGANTOGRAFÍAS",
-                    "LETREROS",
-                    "LETRAS 3D",
-                    "VINILES",
-                    "ROLL SCREEN",
-                    "BANNERS",
-                  ].map((tag) => (
-                    <span
-                      key={tag}
-                      className="bg-uno-red/10 text-uno-red text-[10px] md:text-xs font-bold px-3 py-1 rounded-full tracking-wider"
-                    >
-                      {tag}
-                    </span>
-                  ))}
                 </div>
 
                 <div className="flex flex-wrap gap-3 mt-6">
@@ -135,25 +121,7 @@ export default function Hero() {
                 </div>
               </div>
 
-              <div className="bg-uno-red py-3 px-6 md:px-10 flex items-center justify-between">
-                <span className="text-white/80 text-xs font-bold tracking-widest">
-                  PUBLICIDAD EXTERIOR
-                </span>
-                <div className="flex gap-1.5">
-                  {slides.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setCurrent(i)}
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        i === current ? "bg-white scale-125" : "bg-white/40 hover:bg-white/70"
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="text-white/60 text-[10px] font-bold tracking-[0.2em]">
-                  #somosuno
-                </span>
-              </div>
+
             </div>
           </motion.div>
         </div>
@@ -195,6 +163,10 @@ export default function Hero() {
       <div className="absolute top-6 right-6 z-10 text-white/30 text-xs font-bold tracking-widest hidden md:block">
         www.unopubli.com
       </div>
+
+      <AnimatePresence>
+        {lightboxImg && <Lightbox src={lightboxImg} onClose={() => setLightboxImg(null)} />}
+      </AnimatePresence>
     </section>
   );
 }
