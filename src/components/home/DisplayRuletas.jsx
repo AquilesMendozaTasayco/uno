@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Check } from "lucide-react";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import Lightbox from "@/components/Lightbox";
 
 const items = [
   "Roll screen",
@@ -18,6 +19,7 @@ const items = [
 export default function DisplayRuletas() {
   const [images, setImages] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [lightbox, setLightbox] = useState(null);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -104,7 +106,9 @@ export default function DisplayRuletas() {
                   >
                     <div className={`bg-gray-100 flex items-center justify-center ${i < 2 ? "h-36 md:h-48" : "h-24 md:h-32"}`}>
                       {item.imageUrl ? (
-                        <img src={item.imageUrl} alt={item.title || `Proyecto ${i + 1}`} className="w-full h-full object-cover" />
+                        <button onClick={() => setLightbox(item.imageUrl)} className="w-full h-full">
+                          <img src={item.imageUrl} alt={item.title || `Proyecto ${i + 1}`} className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300" />
+                        </button>
                       ) : (
                         <span className="text-gray-400 text-xs font-bold uppercase tracking-wider">
                           Proyecto {i + 1}
@@ -146,6 +150,9 @@ export default function DisplayRuletas() {
           </div>
         </div>
       </div>
+      <AnimatePresence>
+        {lightbox && <Lightbox src={lightbox} onClose={() => setLightbox(null)} />}
+      </AnimatePresence>
     </section>
   );
 }

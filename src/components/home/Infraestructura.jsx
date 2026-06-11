@@ -1,16 +1,19 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Lightbox from "@/components/Lightbox";
 
 const equipos = [
-  { nombre: "Equipo de corte láser", colspan: "md:col-span-1" },
-  { nombre: "Equipo de corte router", colspan: "md:col-span-1" },
-  { nombre: "Impresora de gran formato", colspan: "md:col-span-1" },
-  { nombre: "Impresora de alta resolución en vinil", colspan: "md:col-span-1" },
-  { nombre: "Equipos de acabados — Termosellado — Ojalillos", colspan: "md:col-span-2" },
+  { nombre: "Equipo de corte láser", imagen: "/corte-laser.png", colspan: "md:col-span-1" },
+  { nombre: "Equipo de corte router", imagen: "/corte-router.png", colspan: "md:col-span-1" },
+  { nombre: "Impresora de gran formato", imagen: "/impresora-gran-formato.png", colspan: "md:col-span-1" },
+  { nombre: "Impresora de alta resolución en vinil", imagen: "/impresora-alta-resoluicon-vinil.png", colspan: "md:col-span-1" },
+  { nombre: "Equipos de acabados — Termosellado — Ojalillos", imagen: "/equipo-acabados.png", colspan: "md:col-span-2" },
 ];
 
 export default function Infraestructura() {
+  const [lightbox, setLightbox] = useState(null);
   return (
     <section id="infraestructura" className="bg-uno-red py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
@@ -41,11 +44,13 @@ export default function Infraestructura() {
                 i === equipos.length - 1 ? "lg:col-span-3" : ""
               }`}
             >
-              <div className="h-32 md:h-40 bg-white/5 flex items-center justify-center">
-                <span className="text-white/30 text-xs font-bold uppercase tracking-wider">
-                  {eq.nombre}
-                </span>
-              </div>
+              <button onClick={() => setLightbox(eq.imagen)} className="h-48 md:h-56 bg-white/5 flex items-center justify-center overflow-hidden w-full">
+                <img
+                  src={eq.imagen}
+                  alt={eq.nombre}
+                  className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
+                />
+              </button>
               <div className="p-4">
                 <p className="text-white text-sm font-bold tracking-wide">
                   {eq.nombre}
@@ -55,6 +60,9 @@ export default function Infraestructura() {
           ))}
         </div>
       </div>
+      <AnimatePresence>
+        {lightbox && <Lightbox src={lightbox} onClose={() => setLightbox(null)} />}
+      </AnimatePresence>
     </section>
   );
 }

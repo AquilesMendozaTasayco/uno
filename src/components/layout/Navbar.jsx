@@ -33,13 +33,13 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between h-16 md:h-20">
         <a href="#inicio" className="flex items-center gap-2">
-          <span
-            className={`font-[family-name:var(--font-bebas)] text-2xl md:text-3xl tracking-wide ${
-              scrolled ? "text-uno-red" : "text-white"
+          <img
+            src="/logo_uno.png"
+            alt="UNO Publicidad"
+            className={`h-10 md:h-12 w-auto ${
+              scrolled ? "filter-logo-red" : ""
             }`}
-          >
-            UNO <span className="font-[family-name:var(--font-montserrat)] font-light text-sm md:text-base">PUBLICIDAD</span>
-          </span>
+          />
         </a>
 
         <div className="hidden lg:flex items-center gap-1">
